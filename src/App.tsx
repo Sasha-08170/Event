@@ -1,25 +1,31 @@
-// App.tsx
 import React from 'react';
 import EventCard from './components/EventCard';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe('pk_test_12345YOURKEY'); // заміни на свій
+
+const eventData = {
+  title: 'Music Fest',
+  subtitle: 'Найкращий фестиваль року',
+  date: '2025-10-15',
+  time: '19:00',
+  location: 'Київ',
+  address: 'Великий зал, Хрещатик 1',
+  description: [
+    'Запрошуємо на великий музичний фестиваль!',
+    'Тут зберуться найпопулярніші гурти України та Європи.',
+  ],
+  organizerPhone: '+380 67 123 45 67 (Саша)',
+  ticketPrice: 500,
+  availableTickets: 50,
+};
 
 const App: React.FC = () => {
-  const myEvent = {
-    title: 'Назва Події',
-    subtitle: 'Підзаголовок Події',
-    date: '14 Травня',
-    time: '19:00',
-    location: 'Місце Проведення',
-    address: 'Вулиця, 1А',
-    description: ['Це опис події...', 'Більше деталей тут...'],
-    organizerPhone: '+380 50 123 4567',
-    ticketPrice: 300,
-    availableTickets: 12,
-  };
-
   return (
-    <div className="event-card-container">
-      <EventCard event={myEvent} />;
-    </div>
+    <Elements stripe={stripePromise}>
+      <EventCard event={eventData} />
+    </Elements>
   );
 };
 
