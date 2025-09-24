@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import clsx from 'clsx';
 import styles from './EventCard.module.css';
 
@@ -12,6 +12,14 @@ import qrImage from './../assets/qr-sample.png';
 
 // Stripe компоненти
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+// Константи
+const PAYMENT_STATUSES = {
+  PROCESSING: 'Обробка...',
+  SUCCESS: 'Оплата успішна! 🎉',
+  ERROR: 'Помилка оплати',
+  UNKNOWN_ERROR: 'Невідома помилка'
+} as const;
 
 // 🔹 Типізація інформації про подію
 interface EventInfo {
@@ -28,6 +36,12 @@ interface EventInfo {
   availableTickets: number;
 }
 
+// Улучшенная типизация
+interface PaymentError {
+  message: string;
+  code?: string;
+}
+
 // 🔹 Пропси для компонента
 interface EventCardProps {
   event: EventInfo;
@@ -39,52 +53,71 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
   const [ticketCount, setTicketCount] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState<PaymentError | null>(null);
 
   const stripe = useStripe();
   const elements = useElements();
 
-  // Зменшення кількості
-  const handleDecrease = () => {
-    if (ticketCount > 1) setTicketCount(ticketCount - 1);
-  };
+  // Оптимизированные обработчики
+  const handleDecrease = useCallback(() => {
+    setTicketCount(prev => Math.max(1, prev - 1));
+  }, []);
 
-  // Збільшення кількості
-  const handleIncrease = () => {
-    if (ticketCount < event.availableTickets) setTicketCount(ticketCount + 1);
-  };
+  const handleIncrease = useCallback(() => {
+    setTicketCount(prev => Math.min(event.availableTickets, prev + 1));
+  }, [event.availableTickets]);
 
-  // 🔹 Обробка Stripe оплати
+  const handleModalClose = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  const handleModalOpen = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  // Улучшенная обработка оплаты
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      setError({ message: 'Stripe не инициализирован' });
+      return;
+    }
 
     setLoading(true);
     setMessage('');
+    setError(null);
 
     try {
-      const clientSecret = 'pi_test_client_secret'; // має приходити з backend
+      const clientSecret = 'pi_test_client_secret';
       const cardElement = elements.getElement(CardElement);
-      if (!cardElement) return;
+      
+      if (!cardElement) {
+        throw new Error('Элемент карты не найден');
+      }
 
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement },
       });
 
-      if (error) {
-        setMessage(error.message ?? 'Помилка оплати');
+      if (stripeError) {
+        setError({ message: stripeError.message || PAYMENT_STATUSES.ERROR, code: stripeError.code });
       } else if (paymentIntent?.status === 'succeeded') {
-        setMessage('Оплата успішна! 🎉');
+        setMessage(PAYMENT_STATUSES.SUCCESS);
       }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setMessage(`Помилка: ${err.message}`);
-      } else {
-        setMessage('Невідома помилка');
-      }
+    } catch (err) {
+      setError({
+        message: err instanceof Error ? err.message : PAYMENT_STATUSES.UNKNOWN_ERROR
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
+  // Мемоизированные вычисления
+  const totalPrice = React.useMemo(() => 
+    event.ticketPrice * ticketCount, 
+    [event.ticketPrice, ticketCount]
+  );
 
   return (
     <article className={clsx(styles.card, className)}>
@@ -124,7 +157,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
         <footer className={clsx(styles.card__footer)}>
           <button
             className={clsx(styles.card__payMobile)}
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleModalOpen}
             aria-label="Оплатити з мобільного"
           >
             <FontAwesomeIcon icon={faQrcode} className={clsx(styles.card__payMobileIcon)} />
@@ -144,7 +177,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
           <header className={clsx(styles.card__ticketsHeader)}>
             <h2 className={clsx(styles.card__ticketsTitle)}>Квитки</h2>
             <p className={clsx(styles.card__ticketPrice)}>
-              {event.ticketPrice}
+              {totalPrice}
               <span className={clsx(styles.card__currency)}> грн</span>
             </p>
           </header>
@@ -233,7 +266,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
 
       {/* 🔹 Модалка */}
       {isModalOpen && (
-        <div className={clsx(styles.card__modalOverlay)} onClick={() => setIsModalOpen(false)}>
+        <div className={clsx(styles.card__modalOverlay)} onClick={handleModalClose}>
           <div className={clsx(styles.card__modalContent)} onClick={(e) => e.stopPropagation()}>
             <h3>Оплата з мобільного</h3>
             <div className={clsx(styles.card__qrWrapper)}>
@@ -241,15 +274,22 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
             </div>
             <button
               className={clsx(styles.card__closeButton)}
-              onClick={() => setIsModalOpen(false)}
+              onClick={handleModalClose}
             >
               Закрити
             </button>
           </div>
         </div>
       )}
+
+      {error && (
+        <p className={clsx(styles.card__errorMessage)}>
+          {error.message}
+        </p>
+      )}
     </article>
   );
 };
 
-export default EventCard;
+// Мемоизация компонента
+export default React.memo(EventCard);

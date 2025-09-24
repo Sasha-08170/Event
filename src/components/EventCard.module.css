@@ -300,3 +300,94 @@
   color: #f55;
   font-size: 14px;
 }
+
+/* Медиа-запроси для адаптивності */
+@media (max-width: 1024px) {
+  .card {
+    padding: 16px;
+    gap: 24px;
+  }
+
+  .card__right {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .card__headerImageWrapper {
+    height: 160px;
+  }
+
+  .card__title {
+    font-size: 20px;
+  }
+
+  .card__description {
+    font-size: 14px;
+  }
+
+  .card__right {
+    padding: 16px;
+  }
+
+  .card__ticketsTitle,
+  .card__ticketPrice {
+    font-size: 18px;
+  }
+
+  .card__quantityButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .card__inputRow {
+    flex-direction: column;
+  }
+
+  .card__input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 12px;
+  }
+
+  .card__headerImageWrapper {
+    height: 140px;
+  }
+
+  .card__title {
+    font-size: 18px;
+  }
+
+  .card__subtitle {
+    font-size: 14px;
+  }
+
+  .card__location,
+  .card__dateTime {
+    font-size: 12px;
+  }
+
+  .card__right {
+    padding: 12px;
+  }
+
+  .card__payButton {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .card__modalContent {
+    margin: 0 12px;
+    padding: 16px;
+  }
+}
