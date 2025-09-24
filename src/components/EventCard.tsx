@@ -11,7 +11,7 @@ import {
   faMapMarkerAlt, 
   faClock, 
   faQrcode,
-  faCreditCard // добавляем иконку карты
+  faCreditCard 
 } from '@fortawesome/free-solid-svg-icons';
 
 // Зображення
@@ -21,7 +21,7 @@ import qrImage from './../assets/qr-sample.png';
 // Stripe компоненти
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-// Константи
+// Константи статусів платежу
 const PAYMENT_STATUSES = {
   PROCESSING: 'Обробка...',
   SUCCESS: 'Оплата успішна! 🎉',
@@ -44,7 +44,7 @@ interface EventInfo {
   availableTickets: number;
 }
 
-
+// Тип для помилок Stripe
 interface PaymentError {
   message: string;
   code?: string;
@@ -56,26 +56,27 @@ interface EventCardProps {
   className?: string;
 }
 
+// Список доступних банків
 const UKRAINIAN_BANKS = [
   { name: 'Monobank', icon: faCreditCard },
   { name: 'ПУМБ', icon: faCreditCard },
 ] as const;
 
-// Схема валидации
+// Схема валідації форми (Formik + Yup)
 const PaymentSchema = Yup.object().shape({
   fullName: Yup.string()
-    .min(2, 'Занадто коротке ім\'я')
-    .max(50, 'Занадто довге ім\'я')
-    .required('Обов\'язкове поле'),
+    .min(2, 'Занадто коротке ім’я')
+    .max(50, 'Занадто довге ім’я')
+    .required('Обов’язкове поле'),
   phone: Yup.string()
     .matches(/^\+?[0-9]{10,12}$/, 'Невірний формат телефону')
-    .required('Обов\'язкове поле'),
+    .required('Обов’язкове поле'),
   email: Yup.string()
     .email('Невірний email')
-    .required('Обов\'язкове поле'),
+    .required('Обов’язкове поле'),
 });
 
-// Обновляем интерфейс и обработчики
+// Значення форми
 interface FormValues {
   fullName: string;
   phone: string;
@@ -83,16 +84,18 @@ interface FormValues {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
+  // Стан
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ticketCount, setTicketCount] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState<PaymentError | null>(null);
 
+  // Stripe hooks
   const stripe = useStripe();
   const elements = useElements();
 
-  // Оптимизированные обработчики
+  // Хендлери
   const handleDecrease = useCallback(() => {
     setTicketCount(prev => Math.max(1, prev - 1));
   }, []);
@@ -101,18 +104,13 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
     setTicketCount(prev => Math.min(event.availableTickets, prev + 1));
   }, [event.availableTickets]);
 
-  const handleModalClose = useCallback(() => {
-    setIsModalOpen(false);
-  }, []);
+  const handleModalClose = useCallback(() => setIsModalOpen(false), []);
+  const handleModalOpen = useCallback(() => setIsModalOpen(true), []);
 
-  const handleModalOpen = useCallback(() => {
-    setIsModalOpen(true);
-  }, []);
-
-  // Обработка оплаты
+  // Stripe submit
   const handleStripeSubmit = async (formValues: FormValues) => {
     if (!stripe || !elements) {
-      setError({ message: 'Stripe не инициализирован' });
+      setError({ message: 'Stripe не ініціалізований' });
       return;
     }
 
@@ -121,12 +119,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
     setError(null);
 
     try {
-      const clientSecret = 'pi_test_client_secret';
+      const clientSecret = 'pi_test_client_secret'; // у проді приходить з бекенду
       const cardElement = elements.getElement(CardElement);
-      
-      if (!cardElement) {
-        throw new Error('Элемент карты не найден');
-      }
+      if (!cardElement) throw new Error('Поле картки не знайдено');
 
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { 
@@ -153,12 +148,10 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
     }
   };
 
-  const initialValues: FormValues = {
-    fullName: '',
-    phone: '',
-    email: ''
-  };
+  // Початкові значення
+  const initialValues: FormValues = { fullName: '', phone: '', email: '' };
 
+  // Сабміт форми
   const handleFormSubmit = async (
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>
@@ -167,16 +160,14 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
       setLoading(true);
       await handleStripeSubmit(values);
     } catch (err) {
-      setError({
-        message: err instanceof Error ? err.message : 'Помилка оплати'
-      });
+      setError({ message: err instanceof Error ? err.message : 'Помилка оплати' });
     } finally {
       setSubmitting(false);
       setLoading(false);
     }
   };
 
-  // Мемоизированные вычисления
+  // Підсумкова вартість
   const totalPrice = React.useMemo(() => 
     event.ticketPrice * ticketCount, 
     [event.ticketPrice, ticketCount]
@@ -185,7 +176,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
   return (
     <div className={styles.card__wrapper}>
       <article className={clsx(styles.card, className)}>
-        {/* Левая часть */}
+        {/* === Ліва частина (інфо) === */}
         <section className={clsx(styles.card__left)}>
           <header className={clsx(styles.card__header)}>
             <div className={clsx(styles.card__headerImageWrapper)}>
@@ -235,7 +226,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
           </footer>
         </section>
 
-        {/* Правая часть */}
+        {/* === Права частина (оплата) === */}
         <aside className={clsx(styles.card__right)}>
           <section className={clsx(styles.card__tickets)}>
             <header className={clsx(styles.card__ticketsHeader)}>
@@ -252,17 +243,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
                   onClick={handleDecrease}
                   disabled={ticketCount <= 1}
                   className={clsx(styles.card__quantityButton)}
-                  title='Зменшити кількість'
+                  title="Зменшити кількість"
                 >
                   –
                 </button>
-                <output 
-                className={clsx(styles.card__quantityDisplay)}>{ticketCount}</output>
+                <output className={clsx(styles.card__quantityDisplay)}>
+                  {ticketCount}
+                </output>
                 <button
                   onClick={handleIncrease}
                   disabled={ticketCount >= event.availableTickets}
                   className={clsx(styles.card__quantityButton)}
-                  title='Збільшити кількість'
+                  title="Збільшити кількість"
                 >
                   +
                 </button>
@@ -279,6 +271,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
             >
               {({ errors, touched, isSubmitting }) => (
                 <Form className={clsx(styles.card__paymentForm)}>
+                  {/* ПІБ */}
                   <div className={clsx(styles.card__inputWrapper)}>
                     <Field
                       name="fullName"
@@ -293,6 +286,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
                     )}
                   </div>
 
+                  {/* Телефон + Email */}
                   <div className={clsx(styles.card__inputRow)}>
                     <div className={clsx(styles.card__inputWrapper)}>
                       <Field
@@ -303,7 +297,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
                           styles.card__input,
                           errors.phone && touched.phone && styles.card__input_error
                         )}
-                        title='Введіть номер телефону'
+                        title="Введіть номер телефону"
                       />
                       {errors.phone && touched.phone && (
                         <div className={styles.card__errorText}>{errors.phone}</div>
@@ -319,7 +313,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
                           styles.card__input,
                           errors.email && touched.email && styles.card__input_error
                         )}
-                        title='Введіть email'
+                        title="Введіть email"
                       />
                       {errors.email && touched.email && (
                         <div className={styles.card__errorText}>{errors.email}</div>
@@ -327,10 +321,11 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
                     </div>
                   </div>
 
+                  {/* Apple / Google Pay / Розстрочка */}
                   <button
                     type="button"
                     className={clsx(styles.card__payButton, styles['card__payButton--apple'])}
-                    title='Оплатити через Apple Pay'
+                    title="Оплатити через Apple Pay"
                   >
                     <FontAwesomeIcon icon={['fab', 'apple']} /> Оплатити через Apple Pay
                   </button>
@@ -351,17 +346,17 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
 
                   <div className={clsx(styles.card__divider)}>— або —</div>
 
+                  {/* Stripe */}
                   <div className={clsx(styles.card__stripeWrapper)}>
                     <p className={clsx(styles.card__stripeTitle)}>Оплата карткою</p>
-                    
-                    {/* Банки */}
+
                     <div className={clsx(styles.card__bankButtons)}>
                       {UKRAINIAN_BANKS.map((bank) => (
                         <button
                           key={bank.name}
                           type="button"
                           className={clsx(styles.card__bankButton)}
-                          title='Оплатити через банк'
+                          title="Оплатити через банк"
                         >
                           <FontAwesomeIcon icon={bank.icon} className={clsx(styles.card__bankIcon)} />
                           {bank.name}
@@ -383,19 +378,22 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
                             base: { 
                               fontSize: '16px', 
                               color: '#fff',
-                              '::placeholder': {
-                                color: '#aaa'
-                              },
+                              '::placeholder': { color: '#aaa' },
                               iconColor: '#fff'
                             } 
                           } 
                         }} 
                       />
                     </div>
-                    
-                    <button type="submit" disabled={isSubmitting || loading} className={clsx(styles.card__payButton)}>
+
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting || loading} 
+                      className={clsx(styles.card__payButton)}
+                    >
                       {isSubmitting || loading ? 'Обробка...' : 'Оплатити карткою'}
                     </button>
+
                     {message && <p className={clsx(styles.card__statusMessage)}>{message}</p>}
                   </div>
                 </Form>
@@ -404,7 +402,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
           </section>
         </aside>
 
-        {/* Модалка */}
+        {/* === QR-модалка === */}
         {isModalOpen && (
           <div className={clsx(styles.card__modalOverlay)} onClick={handleModalClose}>
             <div className={clsx(styles.card__modalContent)} onClick={(e) => e.stopPropagation()}>
@@ -426,3 +424,5 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
 };
 
 export default React.memo(EventCard);
+
+
