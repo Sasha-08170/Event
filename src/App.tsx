@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import EventCard from './components/EventCard';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -11,7 +12,7 @@ const eventData = {
   date: '2025-10-15',
   time: '19:00',
   location: 'Київ',
-  address: 'Великий зал, Хрещатик 1',
+  address: 'Академіка Заболотного, 147а',
   description: [
     'Запрошуємо на великий музичний фестиваль!',
     'Тут зберуться найпопулярніші виконавці.',
@@ -24,6 +25,11 @@ const eventData = {
 const App: React.FC = () => {
   return (
     <Elements stripe={stripePromise}>
+      <Helmet>
+        <title>{eventData.title} - {eventData.subtitle}</title>
+        <meta name="description" content={eventData.description[0]} />
+        <meta name="keywords" content={`музичний фестиваль, ${eventData.title}, ${eventData.location}, квитки`} />
+      </Helmet>
       <EventCard event={eventData} />
     </Elements>
   );
