@@ -22,9 +22,9 @@
 ---
 
 ## 🛠️ Стек Технологий
-- **React 18+**
-- **Helmet** для SEO
-- **Formik** + **Yup** (обработка и валидация форм)
-- **Stripe React SDK** (`@stripe/react-stripe-js`)
-- Иконки **FontAwesome**
-- **CSS Modules** для изолированных стилей
+- **React**
+- **Helmet** 
+- **Formik** + **Yup** 
+- **Stripe React SDK** 
+- **FontAwesome**
+- **CSS Modules** 
