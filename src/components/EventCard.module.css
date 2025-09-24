@@ -1,23 +1,40 @@
+/* Основной контейнер карточки
+-------------------------------------------------- */
 .card {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  background: #2a2a3c;
-  border-radius: 5px;
-  padding: 24px;
-  color: #fff;
+  justify-content: center;
+  align-items: centers;
+  background-color: #181824;
   width: 100%;
   gap: 32px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
-/* Ліва частина */
+/* Контейнер-обертка для центрирования карточки */
+.card__wrapper {
+  height: auto;
+  width: 1150px;
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Левая секция - информация о событии
+-------------------------------------------------- */
+/* Основной контейнер левой части */
 .card__left {
-  flex: 1;
+  flex: 0 1 400px;
+  min-width: 400px;
   display: flex;
   flex-direction: column;
+  background: #181824;
+  border-radius: 5px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* Обертка изображения с эффектом тени и скругленными углами */
 .card__headerImageWrapper {
   overflow: hidden;
   border-radius: 10px;
@@ -26,6 +43,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* Изображение с эффектом масштабирования при наведении */
 .card__headerImage {
   width: 100%;
   height: 100%;
@@ -33,16 +51,20 @@
   transition: transform 0.3s;
 }
 
+/* Заголовок события */
 .card__title {
   font-size: 24px;
   margin: 8px 0;
+  color: #fff;
 }
 
+/* Подзаголовок с пониженным контрастом */
 .card__subtitle {
   font-size: 16px;
   color: #aaa;
 }
 
+/* Общие стили для местоположения и времени */
 .card__location,
 .card__dateTime {
   font-size: 14px;
@@ -50,45 +72,45 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #fff;
 }
 
+/* Описание события с увеличенным межстрочным интервалом */
 .card__description {
   margin-top: 16px;
   font-size: 15px;
   line-height: 1.5;
-}
-
-.card__footer {
-  margin-top: auto;
-}
-
-.card__payMobile {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #444;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
   color: #fff;
-  margin-top: 50px;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background 0.3s;
 }
 
-.card__payMobile:hover {
-  background: #555;
+.card__contacts {
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #fff;
 }
 
 .card__contactsTitle {
-  font-weight: bold;
-  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #fff;
 }
 
-/* Права частина (оплата / квитки) */
+.card__contactsPhone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+/* Правая секция - билеты и оплата
+-------------------------------------------------- */
+/* Основной контейнер правой части с тенью */
 .card__right {
+  flex: 0 1 400px;
+  min-width: 400px;
   background: #181824;
   border-radius: 5px;
   padding: 24px;
@@ -97,223 +119,176 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.card__ticketsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.card__ticketsTitle {
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.card__ticketPrice {
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.card__currency {
-  font-size: 14px;
-  margin-left: 4px;
-  border-radius: 100%;
-  margin: 0 auto;
-  width: 10px;
-  height: 10px;
-  color: #bbb;
-}
-
-.card__quantityControl {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 0;
-}
-
-.card__quantityButton {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: #2a2a3c;
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card__quantityButton:hover {
-  background: #3a3a4c;
-  transform: scale(1.05); /* невеликий ефект при наведенні */
-}
-
-.card__quantityDisplay {
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.card__availableTickets {
-  font-size: 14px;
-  color: #888;
-}
-
-/* Форма */
+/* Форма оплаты
+-------------------------------------------------- */
+/* Контейнер формы с увеличенными отступами для сообщений об ошибках */
 .card__paymentForm {
   margin-top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px; 
 }
 
+/* Обертка для инпутов с позиционированием сообщений об ошибках */
+.card__inputWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 8px; 
+}
+
+/* Стили полей ввода с анимацией границы */
 .card__input {
-  width: 94%;
-  padding: 10px 12px;
+  width: 100%; 
+  margin: 0 auto;
+  padding: 12px 5px;
   border-radius: 8px;
   border: 1px solid #333;
   background: #1f1f2d;
   color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.2s ease; 
 }
 
-.card__inputRow {
-  display: flex;
-  gap: 8px;
+/* Стили ошибки с анимацией тряски */
+.card__input_error {
+  border-color: #ff4444;
+  animation: shake 0.5s; 
 }
 
+/* Текст ошибки под полем ввода */
+.card__errorText {
+  position: absolute;
+  bottom: -20px;
+  left: 2px;
+  color: #ff4444;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Кнопки оплаты */
 .card__payButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  transition: transform 0.2s, background 0.3s;
+  padding: 10px;
+  font-size: 14px;
+
+  background: #1a1a2a; 
+  margin-bottom: 12px; 
+  transition: all 0.3s ease;
 }
 
 .card__payButton:hover {
-  transform: translateY(-2px);
+  background: #fff;
+  color: #1a1a2a;
 }
 
 .card__payButton--apple {
   background: #000;
   color: #fff;
+  margin-top: 8px;
 }
 
-.card__payButton--google {
+.card__payButton--apple:hover {
   background: #fff;
   color: #000;
 }
 
+.card__payButton--google {
+  background: #1a1a2a; 
+  color: #fff; 
+  border: 1px solid #333;
+}
+
+.card__payButton--google:hover {
+  background: #fff;
+  color: #1a1a2a;
+  border-color: #fff;
+}
+
 .card__payButton--installment {
-  background: #2a2a3c;
+  background: #1a1a2a;
   color: #fff;
 }
 
+/* Стили для банковских кнопок */
+.card__bankButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; 
+  margin-bottom: 24px; 
+}
+
+.card__bankButton {
+  background: #1a1a2a; 
+  border: 1px solid #333;
+  padding: 16px; 
+  transition: all 0.3s ease;
+}
+
+.card__bankButton:hover {
+  background: #fff;
+  color: #1a1a2a;
+  border-color: #fff;
+}
+
+.card__bankButton:hover .card__bankIcon {
+  color: #1a1a2a;
+}
+
+/* Разделитель */
 .card__divider {
-  text-align: center;
-  color: #777;
-  margin: 12px 0;
-  font-size: 14px;
+  margin: 24px 0; 
 }
 
-.card__stripeWrapper {
-  padding: 16px;
-  border: 1px solid #333;
-  border-radius: 12px;
-  background: #1f1f2d;
+/* Анимации и эффекты
+-------------------------------------------------- */
+/* Анимация тряски для невалидных полей */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
-.card__stripeTitle {
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #fff;
+/* Состояния элементов
+-------------------------------------------------- */
+/* Стили для отключенных полей */
+.card__input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
-.card__cardIcons {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 24px;
-  color: #ccc;
+/* Стили для отключенных кнопок */
+.card__payButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.card__stripeInput {
-  padding: 10px;
-  background: #181824;
-  border-radius: 8px;
-  border: 1px solid #333;
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-/* Модалка */
-.card__modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card__modalContent {
-  background: #2a2a3c;
-  padding: 20px;
-  border-radius: 16px;
-  max-width: 400px;
-  text-align: center;
-}
-
-.card__closeButton {
-  margin-top: 12px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  background: #444;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.card__closeButton:hover {
-  background: #555;
-}
-
-.card__statusMessage {
-  margin-top: 8px;
-  color: #0f0;
-  font-size: 14px;
-}
-.card__errorMessage {
-  margin-top: 8px;
-  color: #f55;
-  font-size: 14px;
-}
-
-/* Медиа-запроси для адаптивності */
+/* Адаптивная верстка
+-------------------------------------------------- */
+/* Планшеты (до 1024px) */
 @media (max-width: 1024px) {
   .card {
-    padding: 16px;
-    gap: 24px;
+    flex-direction: column;
+    align-items: center;
   }
 
+  .card__left,
   .card__right {
+    flex: 1;
     width: 100%;
+    min-width: unset;
+    max-width: 500px;
   }
 }
 
+/* Малые планшеты и большие телефоны (до 768px) */
 @media (max-width: 768px) {
+  .card__wrapper {
+    max-width: 100%;
+    padding: 10px;
+  }
+  
   .card {
     flex-direction: column;
     padding: 16px;
@@ -338,13 +313,25 @@
 
   .card__ticketsTitle,
   .card__ticketPrice {
-    font-size: 18px;
+    font-size: 16px;
+    margin-right: 10px;
+    color: #fff;
   }
 
   .card__quantityButton {
-    width: 36px;
-    height: 36px;
-  }
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #2a2a3c;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
 
   .card__inputRow {
     flex-direction: column;
@@ -353,9 +340,32 @@
   .card__input {
     width: 100%;
   }
+
+  .card__paymentForm {
+    gap: 20px;
+  }
+
+  .card__bankButtons {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  /* Обновленные стили модального окна */
+  .card__modalContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
 }
 
+/* Мобильные телефоны (до 480px) */
 @media (max-width: 480px) {
+  .card__wrapper {
+    padding: 5px;
+  }
+  
   .card {
     padding: 12px;
   }
@@ -387,7 +397,97 @@
   }
 
   .card__modalContent {
-    margin: 0 12px;
+    margin: 10px;
     padding: 16px;
   }
 }
+
+/* Специальные компоненты
+-------------------------------------------------- */
+/* Модальное окно с затемнением фона */
+.card__modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+/* Контент модального окна */
+.card__modalContent {
+  position: relative;
+  background: transparent;
+  padding: 24px;
+  margin: 0px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+
+/* Сообщения о статусе
+-------------------------------------------------- */
+/* Успешные сообщения */
+.card__statusMessage {
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+/* Сообщения об ошибках */
+.card__errorMessage {
+  color: #dc3545;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+/* Адаптивность для модального окна */
+@media (max-width: 768px) {
+  .card__modalContent {
+    margin: 20px;
+    padding: 20px;
+    max-width: calc(100% - 40px);
+  }
+
+  .card__qrWrapper {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .card__qrCode {
+    width: 100%;
+    height: auto;
+  }
+  
+  .card__closeButton {
+    position: static;
+    margin-top: 16px;
+    width: 100%;
+    padding: 12px;
+    background: #1a1a2a;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card__modalContent {
+    margin: 10px;
+    padding: 16px;
+  }
+
+  .card__qrWrapper {
+    max-width: 240px;
+  }
+}
+  .card__modalContent {
+    margin: 10px;
+    padding: 16px;
+  }
+
+  .card__qrWrapper {
+    max-width: 240px;
+  }
+
