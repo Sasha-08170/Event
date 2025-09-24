@@ -2,7 +2,7 @@
 
 Этот проект содержит **React компонент** для отображения **карточки мероприятия** с функционалом покупки билетов. Он поддерживает **платежи через Stripe**, **мобильные платежи по QR-коду**, **Apple Pay / Google Pay** и **украинские банки (Monobank, PUMB)**. Весь текст пользовательского интерфейса локализован на **украинском языке**.
 
-<img width="1900" height="793" alt="Screenshot_2025_09_24-6" src="https://github.com/user-attachments/assets/7c83abba-44e7-4a17-883a-ea32a82070df" />
+<img width="1567" height="743" alt="Screenshot_2025_09_24-8" src="https://github.com/user-attachments/assets/57d00a4c-2ada-463f-af2b-9e79a8994364" />
 
 ---
 
@@ -23,6 +23,7 @@
 
 ## 🛠️ Стек Технологий
 - **React 18+**
+- **Helmet** для SEO
 - **Formik** + **Yup** (обработка и валидация форм)
 - **Stripe React SDK** (`@stripe/react-stripe-js`)
 - Иконки **FontAwesome**
